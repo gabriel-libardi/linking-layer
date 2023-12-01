@@ -25,6 +25,7 @@ def CamadaDeEnlace() -> bytearray:
     frames = MeioDeComunicacao()
     message_bits = bytearray(b"")
 
+    # Verificar erros de transmissão da camada física
     for frame in frames:
         e1 = CheckEvenBitParity(frame)
         e2 = CheckOddBitParity(frame)
@@ -39,8 +40,39 @@ def CamadaDeEnlace() -> bytearray:
         
         message_bits += frame[:-5]
     
+    # Remover o código de controle e outros trailing zeros
+    ff_index = message_bits.find(b"\xff")
+    if ff_index != -1:
+        message_bits = message_bits[:ff_index]
+
     # Retorna os bits da mensagem para a camada de aplicacao:
     return message_bits
+
+
+def CheckEvenBitParity(frame):
+    # Calcula a paridade dos bits pares no array:
+    parity = 0
+    
+    for byte in range(len(frame)):
+        for shift in range(byte_size):
+            parity ^= (~frame[byte] >> shift)%2
+    
+    # Verifica se a paridade de bits pares está consistente
+    passed_test = (parity == (frame[-1] >> 6)%2)
+    return passed_test
+
+
+def CheckOddBitParity(frame):
+    # Calcula a paridade dos bits pares no array:
+    parity = 0
+    
+    for byte in range(len(frame) - 1):
+        for shift in range(byte_size):
+            parity ^= (frame[byte] >> shift)%2
+    
+    # Verifica se a paridade de bits pares está consistente
+    passed_test = (parity == (frame[-1] >> 6)%2)
+    return passed_test
     
 
 
@@ -62,9 +94,6 @@ def MeioDeComunicacao() -> list:
                     break
     
     return frames
-
-
-
 
 
 if __name__ == '__main__':
