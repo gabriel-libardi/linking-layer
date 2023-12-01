@@ -1,5 +1,6 @@
 import socket
 import random
+import binascii
 
 
 byte_size = 8
@@ -72,7 +73,10 @@ def CamadaDeEnlace(frame_bits:bytes):
 
 def CRC32Check(frame:bytearray) -> bytearray:
     # Calcula o código de detecção de erro CRC-32 de Ethernet.
-    polynomial = b"\xef"
+    frame[-5:-1] = binascii.crc32(frame[0:-1])
+
+    # Retorna o frame para o procedimento da camada de enlace.
+    return frame
 
 
 def OddBitParity(frame:bytearray) -> bytearray:
@@ -84,7 +88,7 @@ def OddBitParity(frame:bytearray) -> bytearray:
             parity ^= (frame[byte] >> shift)%2
     
     # Penúltimo bit é de paridade ímpar
-    frame[len(frame) - 1] ^= parity << 7 
+    frame[-1] ^= parity << 7 
 
     return frame   # Retorna quadro com checksum
 
@@ -98,7 +102,7 @@ def EvenBitParity(frame) -> bytearray:
             parity ^= (frame[byte] >> shift)%2
     
     # Último bit é de paridade par
-    frame[len(frame) - 1] ^= parity << 6
+    frame[-1] ^= parity << 6
 
     return frame   # Retorna quadro com checksum
 
