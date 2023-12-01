@@ -38,14 +38,26 @@ omitidos desta simulação, pois estes seriam redundantes
 endereço de origem).
 """
 def CamadaDeEnlace(frame_bits:bytes):
-    frame_data_length = 1466     # 1466 bits de dados por frame
+    frame_data_length = 1464     # 1464 bits de dados por frame
     frames = []                  # Array de frames a serem transmitidos.
 
     bits_remaining = len(frame_bits)*byte_size
+    frame_index = 0
     while bits_remaining > 0:
-        frame = bytearray(b"\x00"*188)
+        frame = bytearray(b"\x00"*(frame_data_length//8 + 5))
+
+        if bits_remaining//frame_data_length >= 1:
+            frame[0:frame_data_length//8] = frame_bits[(frame_data_length//8)*frame_index:
+                                                       (frame_data_length//8)*(frame_index + 1)]
+            bits_remaining -= frame_data_length
+            frame_index += 1
+        
+        else:
+            frame[0:bits_remaining//8] = frame_bits[(frame_data_length//8)*frame_index:]
+            bits_remaining = 0
 
         frames.append(frame)
+    return frames
     
 
     for frame in frames:
@@ -59,6 +71,8 @@ def CamadaDeEnlace(frame_bits:bytes):
 
 
 def CRC32Check(frame:bytearray) -> bytearray:
+    # Calcula o código de detecção de erro CRC-32 de Ethernet.
+    polynomial = b"\xef"
 
 
 def OddBitParity(frame:bytearray) -> bytearray:
@@ -109,8 +123,8 @@ def MeioDeComunicacao(frame:bytearray):
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as medium:
             medium.connect(('localhost', 58763))
             medium.sendall(frame)
-        except Exception as e:
-            print(f"Problem ocurred during transmission: {e}")
+    except Exception as e:
+        print(f"Problem ocurred during transmission: {e}")
 
 
 if __name__ == '__main__':
