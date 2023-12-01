@@ -59,8 +59,6 @@ def CamadaDeEnlace(frame_bits:bytes):
             bits_remaining = 0
 
         frames.append(frame)
-    return frames
-    
 
     for frame in frames:
         # Append error correcting codes:
@@ -75,7 +73,7 @@ def CamadaDeEnlace(frame_bits:bytes):
 def CRC32Check(frame:bytearray) -> bytearray:
     # Calcula o código de detecção de erro CRC-32 de Ethernet.
     frame[-5:-1] = bytearray(struct.pack('>I', binascii.crc32(frame[0:-1])))
-    
+
     # Retorna o frame para o procedimento da camada de enlace.
     return frame
 
