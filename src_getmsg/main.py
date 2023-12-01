@@ -45,6 +45,23 @@ def CamadaDeEnlace() -> bytearray:
 
 
 def MeioDeComunicacao() -> list:
+    # Esse programa recebe os quadros da camada física
+    frames = []
+
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as medium:
+        medium.bind(('localhost', 58763))
+        medium.listen()
+
+        while True:
+            connection, addr = medium.accept()
+            with connection:
+                frame = connection.recv(188)
+                frames.append(frame)
+
+                if b"\xff" in frame:
+                    break
+    
+    return frames
 
 
 
