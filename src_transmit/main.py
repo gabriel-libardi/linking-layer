@@ -100,7 +100,7 @@ def EvenBitParity(frame) -> bytearray:
     
     for byte in range(len(frame)):
         for shift in range(byte_size):
-            parity ^= (frame[byte] >> shift)%2
+            parity ^= (~frame[byte] >> shift)%2
     
     # Último bit é de paridade par
     frame[-1] ^= parity << 6
