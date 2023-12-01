@@ -28,10 +28,10 @@ def CamadaDeAplicacaoTransmissora(message:str):
     CamadaDeEnlace(frame_bits)
 
 """
-Primeiro particionamos a mensagem para esta ser transmitida
-em quadros de 1500 bits, como no protocolo Ethernet de legado.
+Primeiro particionamos a mensagem para ser transmitida
+em quadros de 1498 bits, e usamos uma aproximação do protocolo de Ethernet.
 Implementaremos CRC-32, bit de paridade par e bit de paridade
-ímpar em cada quadro, então cada quadro terá 1466 bits de dados.
+ímpar em cada quadro, então cada quadro terá 1464 bits de dados.
 Os outros campos de um quadro transmitido por Ethernet serão
 omitidos desta simulação, pois estes seriam redundantes
 (esses seriam os 64 bits de preâmbulo, o endereço de destino e o
@@ -41,9 +41,52 @@ def CamadaDeEnlace(frame_bits:bytes):
     frame_data_length = 1466     # 1466 bits de dados por frame
     frames = []                  # Array de frames a serem transmitidos.
 
+    bits_remaining = len(frame_bits)*byte_size
+    while bits_remaining > 0:
+        frame = bytearray(b"\x00"*188)
+
+        frames.append(frame)
+    
+
     for frame in frames:
+        # Append error correcting codes:
+        frame = CRC32Check(frame)
+        frame = OddBitParity(frame)
+        frame = EvenBitParity(frame)
+
         # Passa o quadro para a camada física, na qual a transmissão acontece.
         MeioDeComunicacao(frame)
+
+
+def CRC32Check(frame:bytearray) -> bytearray:
+
+
+def OddBitParity(frame:bytearray) -> bytearray:
+    # Calcula a paridade dos bits ímpares noo array:
+    parity = 0
+    
+    for byte in range(len(frame) - 1):
+        for shift in range(byte_size):
+            parity ^= (frame[byte] >> shift)%2
+    
+    # Penúltimo bit é de paridade ímpar
+    frame[len(frame) - 1] ^= parity << 7 
+
+    return frame   # Retorna quadro com checksum
+
+
+def EvenBitParity(frame) -> bytearray:
+    # Calcula a paridade dos bits pares no array:
+    parity = 0
+    
+    for byte in range(len(frame)):
+        for shift in range(byte_size):
+            parity ^= (frame[byte] >> shift)%2
+    
+    # Último bit é de paridade par
+    frame[len(frame) - 1] ^= parity << 6
+
+    return frame   # Retorna quadro com checksum
 
 """
 O meio de comunicação é simulado com uma unix socket padrão, a qual 
