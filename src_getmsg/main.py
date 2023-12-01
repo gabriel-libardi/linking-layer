@@ -27,15 +27,13 @@ def CamadaDeEnlace() -> bytearray:
 
     # Verificar erros de transmissão da camada física
     for frame in frames:
-        e1 = CheckEvenBitParity(frame)
-        e2 = CheckOddBitParity(frame)
-        e3 = CheckCRC32(frame)
-
-        if e1:
+        if not CheckEvenBitParity(frame):
             raise RuntimeError("Paridade de bit par está inconsistente")
-        elif e2:
+
+        elif not CheckOddBitParity(frame):
             raise RuntimeError("Paridade de bit ímpar está inconsistente")
-        elif e3:
+            
+        elif not CheckCRC32(frame):
             raise RuntimeError("Teste de CRC-32 está inconsistentes")
         
         message_bits += frame[:-5]
