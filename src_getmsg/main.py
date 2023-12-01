@@ -49,7 +49,7 @@ def CamadaDeEnlace() -> bytearray:
     return message_bits
 
 
-def CheckEvenBitParity(frame):
+def CheckEvenBitParity(frame) -> bool:
     # Calcula a paridade dos bits pares no array:
     parity = 0
     
@@ -62,18 +62,28 @@ def CheckEvenBitParity(frame):
     return passed_test
 
 
-def CheckOddBitParity(frame):
-    # Calcula a paridade dos bits pares no array:
+def CheckOddBitParity(frame) -> bool:
+    # Calcula a paridade dos bits ímpares no array:
     parity = 0
     
     for byte in range(len(frame) - 1):
         for shift in range(byte_size):
             parity ^= (frame[byte] >> shift)%2
     
-    # Verifica se a paridade de bits pares está consistente
-    passed_test = (parity == (frame[-1] >> 6)%2)
+    # Verifica se a paridade de bits ímpares está consistente
+    passed_test = (parity == (frame[-1] >> 7)%2)
     return passed_test
-    
+
+
+def CheckCRC32(frame) -> bool:
+    # Verifica se CRC-32 do frame está consistente
+    checkcrc = frame[-5:-1]
+    frame[-5:-1] = "\b00"*4
+    current_crc = bytearray(struct.pack('>I', binascii.crc32(frame[0:-1])))
+
+    # Verificar se os dois são os mesmos
+    passed_test = (checkcrc == current_crc)
+    return passed_test
 
 
 def MeioDeComunicacao() -> list:
