@@ -43,6 +43,8 @@ def CamadaDeEnlace(frame_bits:bytes):
     frame_data_length = 1464     # 1464 bits de dados por frame
     frames = []                  # Array de frames a serem transmitidos.
 
+    # Divide a mensagem em frames de 1498 bits
+    frame_bits += b"\xff"        # Adiciona código de controle na mensagem
     bits_remaining = len(frame_bits)*byte_size
     frame_index = 0
     while bits_remaining > 0:
@@ -116,7 +118,7 @@ a ilustrar o funcionamento dos algoritmos de detecção de erros.
 def MeioDeComunicacao(frame:bytearray):
     # Simular erro aleatório do meio físico de transmissão
     if random.randint(0, 100) == 42:
-        bit_flipped = random.randint(0, 1499)     # Um dos 1500 bits é invertido
+        bit_flipped = random.randint(0, 1497)     # Um dos 1498 bits é invertido
         index = bit_flipped//byte_size            # Byte cujo bit é invertido
         bit_position = 7 - bit_flipped%byte_size  # Posição do bit a inverter
 
