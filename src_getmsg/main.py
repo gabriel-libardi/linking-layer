@@ -36,6 +36,12 @@ def CamadaDeEnlace() -> bytearray:
             raise RuntimeError("Paridade de bit ímpar está inconsistente")
         elif e3:
             raise RuntimeError("Teste de CRC-32 está inconsistentes")
+        
+        message_bits += frame[:-5]
+    
+    # Retorna os bits da mensagem para a camada de aplicacao:
+    return message_bits
+    
 
 
 def MeioDeComunicacao() -> list:
