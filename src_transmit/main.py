@@ -126,11 +126,11 @@ def MeioDeComunicacao(frame:bytearray):
 
         frame[index] ^= 1 << bit_position         # Inverte o bit
     """
-    error_type = 0
+    error_type = 1
     if error_type == 0:
         frame = ForceCRC32Error(frame)
     elif error_type == 1:
-        frame = ForceEvenBitPartityError(frame)
+        frame = ForceEvenBitParityError(frame)
     elif error_type == 2:
         frame = ForceOddBitParityError(frame)
 
@@ -142,19 +142,33 @@ def MeioDeComunicacao(frame:bytearray):
         print(f"Problem ocurred during transmission: {e}")
 
 
+"""
+Força o código a dar erro CRC-32 à mensagem Lorem Ipsum.
+Todos os exemplo abaixo são erros que poderia acaontecer na
+camada física.
+"""
 def ForceCRC32Error(frame):
-    posicao = random.randint(0, len(frame) - 1)
+    posicao = random.randint(0, 100)
     frame[posicao] ^= 0b10101100
     
     return frame
 
 
+"""
+Força o código a dar erro de paridade par, independente da mensagem.
+"""
 def ForceEvenBitParityError(frame):
-    for _ in range(num_errors):
-        byte_index = random.randint(0, len(frame) - 1)
-        bit_index = random.randint(0, 7)
-        frame[byte_index] ^= 1 << bit_index
+    frame[-1] ^= 0b00000001
+    return frame
 
+
+"""
+Força o código a dar erro de paridade Ímpar a Lorem Ipsum.
+"""
+def ForceOddBitParityError(frame):
+    posicao = random.randint(0, 100)
+    frame[posicao] ^= 0b00000001
+    
     return frame
 
 if __name__ == '__main__':
