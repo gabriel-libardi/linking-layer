@@ -126,7 +126,7 @@ def MeioDeComunicacao(frame:bytearray):
 
         frame[index] ^= 1 << bit_position         # Inverte o bit
     """
-    error_type = 1
+    error_type = 2
     if error_type == 0:
         frame = ForceCRC32Error(frame)
     elif error_type == 1:
@@ -166,8 +166,9 @@ def ForceEvenBitParityError(frame):
 Força o código a dar erro de paridade Ímpar a Lorem Ipsum.
 """
 def ForceOddBitParityError(frame):
-    posicao = random.randint(0, 100)
-    frame[posicao] ^= 0b00000001
+    frame[-1] ^= 0b00000001
+    frame[-6] ^= 0b00000001
+
     
     return frame
 
