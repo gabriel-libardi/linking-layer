@@ -127,11 +127,11 @@ def MeioDeComunicacao(frame:bytearray):
         frame = ForceOddBitParityError(frame)
     elif error_type ==3:
         if random.randint(0, 100) == 42:
-        bit_flipped = random.randint(0, 1497)     # Um dos 1498 bits é invertido
-        index = bit_flipped//byte_size            # Byte cujo bit é invertido
-        bit_position = 7 - bit_flipped%byte_size  # Posição do bit a inverter
+            bit_flipped = random.randint(0, 1497)     # Um dos 1498 bits é invertido
+            index = bit_flipped//byte_size            # Byte cujo bit é invertido
+            bit_position = 7 - bit_flipped%byte_size  # Posição do bit a inverter
 
-        frame[index] ^= 1 << bit_position         # Inverte o bit
+            frame[index] ^= 1 << bit_position         # Inverte o bit
 
     try:
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as medium:
