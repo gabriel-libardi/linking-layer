@@ -94,7 +94,7 @@ def MeioDeComunicacao() -> list:
     frames = []
 
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as medium:
-        medium.bind(('localhost', 58763))
+        medium.bind(('localhost', 58764))
         medium.listen()
 
         while True:

@@ -5,7 +5,7 @@ import struct
 
 
 byte_size = 8
-error_type = 3
+error_type = 2
 
 
 def main():
@@ -135,7 +135,7 @@ def MeioDeComunicacao(frame:bytearray):
 
     try:
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as medium:
-            medium.connect(('localhost', 58763))
+            medium.connect(('localhost', 58764))
             medium.sendall(frame)
     except Exception as e:
         print(f"Problem ocurred during transmission: {e}")

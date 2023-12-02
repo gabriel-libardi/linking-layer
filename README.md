@@ -23,3 +23,5 @@ Por fim, rode a aplicação transmissora com o seguinte código:
 ```
 python3 src_transmit/main.py
 ```
+
+O link do vídeo demonstrando o funcionamento do código pode ser encontrado [aqui](https://drive.google.com/file/d/17hgyjYYfkpFR_P75-F4WF7eqzGV_sfCt/view?usp=sharing)
