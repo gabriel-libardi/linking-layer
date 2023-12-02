@@ -88,6 +88,7 @@ def CheckCRC32(frame) -> bool:
     passed_test = (checkcrc == current_crc)
     return passed_test
 
+
 def MeioDeComunicacao() -> list:
     # Esse programa recebe os quadros da camada física
     frames = []

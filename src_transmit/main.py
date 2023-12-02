@@ -106,6 +106,7 @@ def EvenBitParity(frame) -> bytearray:
     frame[-1] ^= parity << 6
 
     return frame   # Retorna quadro com checksum
+    
 
 """
 O meio de comunicação é simulado com uma unix socket padrão, a qual 
