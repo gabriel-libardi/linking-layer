@@ -106,7 +106,7 @@ def EvenBitParity(frame) -> bytearray:
     frame[-1] ^= parity << 6
 
     return frame   # Retorna quadro com checksum
-    
+
 
 """
 O meio de comunicação é simulado com uma unix socket padrão, a qual 
@@ -117,6 +117,7 @@ de onda para os quais o protocolo de enquadramento usado é feito, mas ajuda
 a ilustrar o funcionamento dos algoritmos de detecção de erros.
 """
 def MeioDeComunicacao(frame:bytearray):
+    """
     # Simular erro aleatório do meio físico de transmissão
     if random.randint(0, 100) == 42:
         bit_flipped = random.randint(0, 1497)     # Um dos 1498 bits é invertido
@@ -124,6 +125,14 @@ def MeioDeComunicacao(frame:bytearray):
         bit_position = 7 - bit_flipped%byte_size  # Posição do bit a inverter
 
         frame[index] ^= 1 << bit_position         # Inverte o bit
+    """
+    error_type = 0
+    if error_type == 0:
+        frame = ForceCRC32Error(frame)
+    elif error_type == 1:
+        frame = ForceEvenBitPartityError(frame)
+    elif error_type == 2:
+        frame = ForceOddBitParityError(frame)
 
     try:
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as medium:
@@ -132,6 +141,21 @@ def MeioDeComunicacao(frame:bytearray):
     except Exception as e:
         print(f"Problem ocurred during transmission: {e}")
 
+
+def ForceCRC32Error(frame):
+    posicao = random.randint(0, len(frame) - 1)
+    frame[posicao] ^= 0b10101100
+    
+    return frame
+
+
+def ForceEvenBitParityError(frame):
+    for _ in range(num_errors):
+        byte_index = random.randint(0, len(frame) - 1)
+        bit_index = random.randint(0, 7)
+        frame[byte_index] ^= 1 << bit_index
+
+    return frame
 
 if __name__ == '__main__':
     main()
