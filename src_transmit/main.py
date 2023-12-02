@@ -126,7 +126,7 @@ def MeioDeComunicacao(frame:bytearray):
 
         frame[index] ^= 1 << bit_position         # Inverte o bit
     """
-    error_type = 2
+    error_type = 0
     if error_type == 0:
         frame = ForceCRC32Error(frame)
     elif error_type == 1:
@@ -148,8 +148,7 @@ Todos os exemplo abaixo são erros que poderia acaontecer na
 camada física.
 """
 def ForceCRC32Error(frame):
-    posicao = random.randint(0, 100)
-    frame[posicao] ^= 0b10101100
+    frame[50] ^= 0b10101100
     
     return frame
 
