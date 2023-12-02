@@ -5,6 +5,7 @@ import struct
 
 
 byte_size = 8
+error_type = 3
 
 
 def main():
@@ -117,22 +118,20 @@ de onda para os quais o protocolo de enquadramento usado é feito, mas ajuda
 a ilustrar o funcionamento dos algoritmos de detecção de erros.
 """
 def MeioDeComunicacao(frame:bytearray):
-    """
     # Simular erro aleatório do meio físico de transmissão
-    if random.randint(0, 100) == 42:
-        bit_flipped = random.randint(0, 1497)     # Um dos 1498 bits é invertido
-        index = bit_flipped//byte_size            # Byte cujo bit é invertido
-        bit_position = 7 - bit_flipped%byte_size  # Posição do bit a inverter
-
-        frame[index] ^= 1 << bit_position         # Inverte o bit
-    """
-    error_type = 0
     if error_type == 0:
         frame = ForceCRC32Error(frame)
     elif error_type == 1:
         frame = ForceEvenBitParityError(frame)
     elif error_type == 2:
         frame = ForceOddBitParityError(frame)
+    elif error_type ==3:
+        if random.randint(0, 100) == 42:
+        bit_flipped = random.randint(0, 1497)     # Um dos 1498 bits é invertido
+        index = bit_flipped//byte_size            # Byte cujo bit é invertido
+        bit_position = 7 - bit_flipped%byte_size  # Posição do bit a inverter
+
+        frame[index] ^= 1 << bit_position         # Inverte o bit
 
     try:
         with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as medium:
