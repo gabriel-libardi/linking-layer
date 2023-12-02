@@ -3,6 +3,9 @@ import binascii
 import struct
 
 
+byte_size = 8
+
+
 def AplicacaoReceptora():
     # Procedimento que representa a aplicacao receptora
     message = CamadaDeAplicacaoReceptora() # Recebe mensagem
@@ -14,7 +17,7 @@ def AplicacaoReceptora():
 def CamadaDeAplicacaoReceptora() -> str:
     # Recebe os bits da mensagem da camada de enlace 
     # e a retorna pra aplicação:
-    message = CamadeDeEnlace().decode('utf-8')
+    message = CamadaDeEnlace().decode('utf-8')
 
     # Retorna a string que corresponde a mensagem
     return message
@@ -32,7 +35,7 @@ def CamadaDeEnlace() -> bytearray:
 
         elif not CheckOddBitParity(frame):
             raise RuntimeError("Paridade de bit ímpar está inconsistente")
-            
+
         elif not CheckCRC32(frame):
             raise RuntimeError("Teste de CRC-32 está inconsistentes")
         
@@ -74,15 +77,16 @@ def CheckOddBitParity(frame) -> bool:
 
 
 def CheckCRC32(frame) -> bool:
+    frame = bytearray(frame) # Converte frame de bytes pra bytearray
+
     # Verifica se CRC-32 do frame está consistente
     checkcrc = frame[-5:-1]
-    frame[-5:-1] = "\b00"*4
+    frame[-5:-1] = b"\x00\x00\x00\x00"
     current_crc = bytearray(struct.pack('>I', binascii.crc32(frame[0:-1])))
 
     # Verificar se os dois são os mesmos
     passed_test = (checkcrc == current_crc)
     return passed_test
-
 
 def MeioDeComunicacao() -> list:
     # Esse programa recebe os quadros da camada física
